@@ -1,10 +1,8 @@
 "use client"
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +18,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { EllipsisVerticalIcon, CircleUserRoundIcon, CreditCardIcon, BellIcon, LogOutIcon } from "lucide-react"
+import { EllipsisVerticalIcon, UserCircle2Icon, LogOutIcon, Download } from "lucide-react"
 
 export function NavUser({
   user,
@@ -32,6 +30,8 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const router = useRouter()
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -41,63 +41,63 @@ export function NavUser({
               <SidebarMenuButton size="lg" className="aria-expanded:bg-muted" />
             }
           >
-            <Avatar className="size-8 rounded-lg grayscale">
-              <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+            <Avatar className="size-8 rounded-lg">
+              <AvatarImage src={user.avatar} alt={user.name} className="object-cover object-center" />
+              <AvatarFallback className="rounded-lg bg-primary text-primary-foreground text-xs font-bold">
+                MU
+              </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">{user.name}</span>
-              <span className="truncate text-xs text-foreground/70">
-                {user.email}
-              </span>
+              <span className="truncate font-semibold">{user.name}</span>
+              <span className="truncate text-xs text-muted-foreground">{user.email}</span>
             </div>
-            <EllipsisVerticalIcon className="ml-auto size-4" />
+            <EllipsisVerticalIcon className="ml-auto size-4 text-muted-foreground" />
           </DropdownMenuTrigger>
+
           <DropdownMenuContent
-            className="min-w-56"
+            className="min-w-56 rounded-xl"
             side={isMobile ? "bottom" : "right"}
             align="end"
-            sideOffset={4}
+            sideOffset={6}
           >
-            <DropdownMenuGroup>
-              <DropdownMenuLabel className="p-0 font-normal">
-                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                  <Avatar className="size-8">
-                    <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                  </Avatar>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">{user.name}</span>
-                    <span className="truncate text-xs text-muted-foreground">
-                      {user.email}
-                    </span>
-                  </div>
+            {/* User label */}
+            <DropdownMenuLabel className="p-0 font-normal">
+              <div className="flex items-center gap-2.5 px-2 py-2">
+                <Avatar className="size-9 rounded-lg">
+                  <AvatarImage src={user.avatar} alt={user.name} className="object-cover object-center" />
+                  <AvatarFallback className="rounded-lg bg-primary text-primary-foreground text-xs font-bold">
+                    MU
+                  </AvatarFallback>
+                </Avatar>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold">{user.name}</span>
+                  <span className="truncate text-xs text-muted-foreground">{user.email}</span>
                 </div>
-              </DropdownMenuLabel>
-            </DropdownMenuGroup>
+              </div>
+            </DropdownMenuLabel>
+
             <DropdownMenuSeparator />
+
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <CircleUserRoundIcon
-                />
-                Account
+              <DropdownMenuItem asChild>
+                <Link href="/profile">
+                  <UserCircle2Icon className="size-4" />
+                  Profile
+                </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCardIcon
-                />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <BellIcon
-                />
-                Notifications
+              <DropdownMenuItem asChild>
+                <a href="/Shaikh_Mohammad_Umar_Resume.pdf" download="Shaikh_Mohammad_Umar_Resume.pdf">
+                  <Download className="size-4" />
+                  Download Resume
+                </a>
               </DropdownMenuItem>
             </DropdownMenuGroup>
+
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <LogOutIcon
-              />
-              Log out
+
+            <DropdownMenuItem onClick={() => router.push("/")}>
+              <LogOutIcon className="size-4" />
+              Exit to Landing
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
