@@ -23,6 +23,7 @@ import {
   ChevronsLeftIcon,
   ChevronsRightIcon,
   SearchIcon,
+  DownloadIcon,
 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -236,6 +237,27 @@ const columns: ColumnDef<Repo>[] = [
   },
 ]
 
+function exportToCsv(rows: Repo[]) {
+  const headers = ["name", "description", "stars", "forks", "commits", "languages", "updated_at"]
+  const csvRows = rows.map((r) => [
+    r.name,
+    r.description ?? "",
+    r.stargazers_count,
+    r.forks_count,
+    r.commit_count,
+    r.languages.map((l) => l.name).join(";"),
+    r.updated_at,
+  ])
+  const csv = [headers, ...csvRows].map((r) => r.map(String).map((v) => `"${v.replace(/"/g, '""')}"`).join(",")).join("\n")
+  const blob = new Blob([csv], { type: "text/csv" })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = "repositories.csv"
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 export function DataTable({ data }: { data: Repo[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: "updated_at", desc: true },
@@ -277,6 +299,15 @@ export function DataTable({ data }: { data: Repo[] }) {
           </span>
         </h2>
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 gap-1.5 text-xs shrink-0"
+            onClick={() => exportToCsv(table.getFilteredRowModel().rows.map((r) => r.original))}
+          >
+            <DownloadIcon className="size-3.5" />
+            Export CSV
+          </Button>
           <div className="relative flex-1 sm:flex-none">
             <SearchIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
             <Input
@@ -334,9 +365,9 @@ export function DataTable({ data }: { data: Repo[] }) {
           <TableBody>
             {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow key={row.id} className="h-11 hover:bg-muted/50 transition-colors">
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="py-0">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}

@@ -1,4 +1,4 @@
-import { Geist_Mono, Manrope, JetBrains_Mono } from "next/font/google"
+import { Manrope, JetBrains_Mono } from "next/font/google"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -6,9 +6,8 @@ import { AppLayout } from "@/components/app-layout"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 
-const jetbrainsMonoHeading = JetBrains_Mono({ subsets: ["latin"], variable: "--font-heading" })
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-sans" })
-const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
+const jetbrainsMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
 export default function RootLayout({
   children,
@@ -19,7 +18,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", manrope.variable, jetbrainsMonoHeading.variable)}
+      className={cn("antialiased", manrope.variable, jetbrainsMono.variable, "font-sans")}
     >
       <body>
         <ThemeProvider>

@@ -12,7 +12,11 @@ function hashIndex(name: string, max: number): number {
   return hash % max
 }
 
+// Only hex colors are valid GitHub language colors — reject anything else to
+// prevent CSS injection via the dangerouslySetInnerHTML path in chart.tsx.
+const HEX_COLOR_RE = /^#[0-9a-fA-F]{3,8}$/
+
 export function resolveLanguageColor(name: string, apiColor: string | null | undefined): string {
-  if (apiColor && apiColor !== "#8b8b8b") return apiColor
+  if (apiColor && HEX_COLOR_RE.test(apiColor) && apiColor !== "#8b8b8b") return apiColor
   return FALLBACK_PALETTE[hashIndex(name, FALLBACK_PALETTE.length)]
 }

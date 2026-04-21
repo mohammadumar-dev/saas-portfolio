@@ -81,6 +81,15 @@ function ChartContainer({
   )
 }
 
+// Allowlist: hex, rgb/rgba/hsl/hsla/oklch/oklab functional notation, CSS named keywords
+// This guards dangerouslySetInnerHTML below against CSS injection via external color values.
+const SAFE_CSS_COLOR_RE =
+  /^(#[0-9a-fA-F]{3,8}|(rgb|rgba|hsl|hsla|oklch|oklab|lch|lab)\([^)]{1,80}\)|[a-zA-Z]{2,32})$/
+
+function sanitizeCssColor(color: string): string | null {
+  return SAFE_CSS_COLOR_RE.test(color.trim()) ? color.trim() : null
+}
+
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(
     ([, config]) => config.theme ?? config.color
@@ -99,9 +108,10 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
 ${prefix} [data-chart=${id}] {
 ${colorConfig
   .map(([key, itemConfig]) => {
-    const color =
+    const raw =
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ??
       itemConfig.color
+    const color = raw ? sanitizeCssColor(raw) : null
     return color ? `  --color-${key}: ${color};` : null
   })
   .join("\n")}

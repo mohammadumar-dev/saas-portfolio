@@ -25,7 +25,6 @@ import {
   Settings2Icon,
   CircleHelpIcon,
   UserCircle2Icon,
-  Code2,
 } from "lucide-react"
 
 const data = {
@@ -58,13 +57,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton
               tooltip="Mohammad Umar · Full Stack Developer"
               render={<Link href="/dashboard" />}
+              className="h-auto py-2"
             >
-              <div className="relative flex size-4 shrink-0 items-center justify-center">
-                <div className="absolute size-6 rounded-lg bg-primary" />
-                <Code2 className="relative size-3.5 text-primary-foreground" />
+              {/* Gradient logo tile */}
+              <div className="relative flex shrink-0 size-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-[oklch(0.65_0.22_330)] shadow-glow-primary">
+                <span className="relative text-[10px] font-mono font-bold text-primary-foreground leading-none">
+                  MU
+                </span>
               </div>
               <div className="flex min-w-0 flex-1 flex-col leading-tight group-data-[collapsible=icon]:hidden">
-                <span className="truncate text-sm font-semibold">Mohammad Umar</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="truncate text-sm font-semibold">Mohammad Umar</span>
+                  <span className="shrink-0 rounded-full border border-primary/30 bg-primary/10 px-1.5 py-0 text-[9px] font-mono font-semibold text-primary">
+                    v1.0
+                  </span>
+                </div>
                 <span className="truncate text-[10px] text-muted-foreground">Full Stack Developer</span>
               </div>
             </SidebarMenuButton>

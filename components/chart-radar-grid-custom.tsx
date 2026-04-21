@@ -27,7 +27,7 @@ const MONTHS = [
 const chartConfig = {
   contributions: {
     label: "Contributions",
-    color: "var(--primary)",
+    color: "var(--chart-1)",
   },
 } satisfies ChartConfig
 
@@ -47,11 +47,15 @@ export function ChartRadarGridCustom({ monthly }: { monthly: number[] }) {
   const phaseLabel = phase === "1" ? "Jan – Jun" : "Jul – Dec"
 
   return (
-    <Card>
+    <Card className="shadow-elevation-1">
       <CardHeader className="items-center pb-4">
         <CardTitle>Monthly Contributions</CardTitle>
         <CardDescription>
-          {phaseLabel} · {total.toLocaleString()} contributions
+          {phaseLabel} ·{" "}
+          <span className="font-mono font-semibold tabular-nums text-foreground">
+            {total.toLocaleString()}
+          </span>{" "}
+          contributions
         </CardDescription>
         <CardAction>
           <ToggleGroup
@@ -75,16 +79,32 @@ export function ChartRadarGridCustom({ monthly }: { monthly: number[] }) {
           <RadarChart data={chartData}>
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel />}
+              content={
+                <ChartTooltipContent
+                  className="rounded-xl border-border/50 bg-card/95 backdrop-blur-sm shadow-elevation-2"
+                  hideLabel
+                />
+              }
             />
-            <PolarGrid radialLines={false} strokeWidth={1} />
-            <PolarAngleAxis dataKey="month" tick={{ fontSize: 12 }} />
+            <PolarGrid
+              radialLines={false}
+              stroke="var(--border)"
+              strokeOpacity={0.7}
+              strokeWidth={1}
+            />
+            <PolarAngleAxis
+              dataKey="month"
+              tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+            />
             <Radar
               dataKey="contributions"
-              fill="var(--color-contributions)"
-              fillOpacity={0.5}
-              stroke="var(--color-contributions)"
+              fill="var(--chart-1)"
+              fillOpacity={0.2}
+              stroke="var(--chart-1)"
               strokeWidth={2}
+              isAnimationActive
+              animationBegin={0}
+              animationDuration={500}
             />
           </RadarChart>
         </ChartContainer>

@@ -1,6 +1,6 @@
 "use client"
 
-import { Pie, PieChart } from "recharts"
+import { Pie, PieChart, Cell } from "recharts"
 
 import {
   Card,
@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/card"
 import {
   ChartContainer,
-  ChartLegend,
   ChartTooltip,
   ChartTooltipContent,
   type ChartConfig,
@@ -30,7 +29,7 @@ function toKey(name: string) {
 export function ChartPieLegend({ data }: { data: LanguageEntry[] }) {
   if (!data.length) {
     return (
-      <Card className="flex flex-col">
+      <Card className="flex flex-col shadow-elevation-1">
         <CardHeader className="items-center pb-0">
           <CardTitle>Language Distribution</CardTitle>
           <CardDescription>Add a GITHUB_TOKEN to load live data</CardDescription>
@@ -42,10 +41,12 @@ export function ChartPieLegend({ data }: { data: LanguageEntry[] }) {
     )
   }
 
+  const total = data.reduce((sum, l) => sum + l.bytes, 0)
   const chartData = data.map((l) => ({
     key: toKey(l.name),
     name: l.name,
     value: l.bytes,
+    pct: ((l.bytes / total) * 100).toFixed(1),
     fill: l.color,
   }))
 
@@ -57,23 +58,21 @@ export function ChartPieLegend({ data }: { data: LanguageEntry[] }) {
   }
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col shadow-elevation-1">
       <CardHeader className="items-center pb-0">
         <CardTitle>Language Distribution</CardTitle>
         <CardDescription>Across all public repositories</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[300px]"
-        >
+        <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[280px]">
           <PieChart>
             <ChartTooltip
               cursor={false}
               content={
                 <ChartTooltipContent
+                  className="rounded-xl border-border/50 bg-card/95 backdrop-blur-sm shadow-elevation-2"
                   formatter={(_value, name) => (
-                    <span className="font-medium">{name}</span>
+                    <span className="font-medium font-mono">{name}</span>
                   )}
                   hideLabel
                 />
@@ -83,29 +82,36 @@ export function ChartPieLegend({ data }: { data: LanguageEntry[] }) {
               data={chartData}
               dataKey="value"
               nameKey="name"
-              innerRadius={55}
+              innerRadius={65}
+              outerRadius={110}
               paddingAngle={2}
               stroke="transparent"
-            />
-            <ChartLegend
-              content={() => (
-                <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5 px-2 pt-4">
-                  {chartData.map((entry) => (
-                    <div key={entry.key} className="flex items-center gap-1.5">
-                      <span
-                        className="size-2.5 shrink-0 rounded-full"
-                        style={{ backgroundColor: entry.fill }}
-                      />
-                      <span className="text-xs text-muted-foreground">
-                        {entry.name}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            />
+              isAnimationActive
+              animationBegin={0}
+              animationDuration={600}
+            >
+              {chartData.map((entry) => (
+                <Cell key={entry.key} fill={entry.fill} />
+              ))}
+            </Pie>
           </PieChart>
         </ChartContainer>
+
+        {/* Legend list */}
+        <div className="mt-2 mb-4 flex flex-col gap-1.5 px-2">
+          {chartData.map((entry) => (
+            <div key={entry.key} className="flex items-center gap-2">
+              <span
+                className="size-2.5 shrink-0 rounded-full"
+                style={{ backgroundColor: entry.fill }}
+              />
+              <span className="flex-1 text-xs text-muted-foreground truncate">{entry.name}</span>
+              <span className="text-xs font-mono font-semibold tabular-nums text-foreground/80">
+                {entry.pct}%
+              </span>
+            </div>
+          ))}
+        </div>
       </CardContent>
     </Card>
   )

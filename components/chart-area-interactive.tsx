@@ -35,7 +35,7 @@ type ContributionWeek = {
 const chartConfig = {
   contributions: {
     label: "Contributions",
-    color: "var(--primary)",
+    color: "var(--chart-1)",
   },
 } satisfies ChartConfig
 
@@ -57,10 +57,7 @@ export function ChartAreaInteractive({ data }: { data: ContributionWeek[] }) {
     return data.filter((w) => new Date(w.date) >= cutoff)
   }, [data, timeRange])
 
-  const totalContributions = filteredData.reduce(
-    (sum, w) => sum + w.contributions,
-    0
-  )
+  const totalContributions = filteredData.reduce((sum, w) => sum + w.contributions, 0)
 
   if (!data.length) {
     return (
@@ -77,15 +74,18 @@ export function ChartAreaInteractive({ data }: { data: ContributionWeek[] }) {
   }
 
   return (
-    <Card className="@container/card">
+    <Card className="@container/card shadow-elevation-1">
       <CardHeader>
         <CardTitle>Contribution Activity</CardTitle>
         <CardDescription>
           <span className="hidden @[540px]/card:block">
-            {totalContributions.toLocaleString()} contributions in the selected period
+            <span className="font-mono font-semibold tabular-nums text-foreground">
+              {totalContributions.toLocaleString()}
+            </span>{" "}
+            contributions in the selected period
           </span>
-          <span className="@[540px]/card:hidden">
-            {totalContributions.toLocaleString()} contributions
+          <span className="@[540px]/card:hidden font-mono font-semibold tabular-nums text-foreground">
+            {totalContributions.toLocaleString()}
           </span>
         </CardDescription>
         <CardAction>
@@ -100,10 +100,7 @@ export function ChartAreaInteractive({ data }: { data: ContributionWeek[] }) {
             <ToggleGroupItem value="6m">Last 6 months</ToggleGroupItem>
             <ToggleGroupItem value="90d">Last 90 days</ToggleGroupItem>
           </ToggleGroup>
-          <Select
-            value={timeRange}
-            onValueChange={(value) => setTimeRange(value)}
-          >
+          <Select value={timeRange} onValueChange={(value) => value && setTimeRange(value)}>
             <SelectTrigger
               className="flex w-40 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate @[767px]/card:hidden"
               size="sm"
@@ -124,34 +121,35 @@ export function ChartAreaInteractive({ data }: { data: ContributionWeek[] }) {
           <AreaChart data={filteredData}>
             <defs>
               <linearGradient id="fillContributions" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--color-contributions)" stopOpacity={0.8} />
-                <stop offset="95%" stopColor="var(--color-contributions)" stopOpacity={0.05} />
+                <stop offset="5%"  stopColor="var(--chart-1)" stopOpacity={0.5} />
+                <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0.02} />
               </linearGradient>
             </defs>
-            <CartesianGrid vertical={false} />
+            <CartesianGrid
+              vertical={false}
+              stroke="var(--border)"
+              strokeDasharray="4 4"
+              strokeOpacity={0.6}
+            />
             <XAxis
               dataKey="date"
               tickLine={false}
               axisLine={false}
               tickMargin={8}
               minTickGap={32}
+              tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
               tickFormatter={(value) =>
-                new Date(value).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                })
+                new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric" })
               }
             />
             <YAxis hide />
             <ChartTooltip
-              cursor={false}
+              cursor={{ stroke: "var(--border)", strokeWidth: 1 }}
               content={
                 <ChartTooltipContent
+                  className="rounded-xl border-border/50 bg-card/95 backdrop-blur-sm shadow-elevation-2"
                   labelFormatter={(value) =>
-                    new Date(value).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })
+                    new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
                   }
                   indicator="dot"
                 />
@@ -161,7 +159,8 @@ export function ChartAreaInteractive({ data }: { data: ContributionWeek[] }) {
               dataKey="contributions"
               type="monotone"
               fill="url(#fillContributions)"
-              stroke="var(--color-contributions)"
+              stroke="var(--chart-1)"
+              strokeWidth={2}
             />
           </AreaChart>
         </ChartContainer>
